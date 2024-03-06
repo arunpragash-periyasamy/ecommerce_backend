@@ -18,8 +18,8 @@ db.once('open', function() {
 
 
 
+app.use(cors({ origin: '*' }))
 app.use(bodyParser.json());
-app.use(cors())
 app.use("/authentication",authentication);
 
 
