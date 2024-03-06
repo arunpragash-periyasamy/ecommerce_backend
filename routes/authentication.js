@@ -41,7 +41,7 @@ router.post('/login', async (req, res) => {
     }
     
     let token=jwt.sign({userId : user._id}, "GUVI_ECOMMERCE", {expiresIn: '1h'});
-    res.json({token:token});
+    res.json({token:token, userName: user[0].userName});
 });
 
 module.exports = router;
