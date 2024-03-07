@@ -7,15 +7,31 @@ const authentication = require('./routes/authentication');
 const cart = require('./routes/cart');
 const mongoose = require('mongoose');
 
+const jwt = require('jsonwebtoken');
+// Function to verify JWT token using async/await
+const verifyToken = async (req, res, next) => {
+    console.log(req.headers);
+    const token = req.headers['authorization'].split(" ")[1];
+    console.log(token);
+  try {
+    const decoded = await jwt.verify(token, process.env.SECRET_KEY);
+    console.log("userData ", decoded);
+    req.body.userId = decoded.userId;
+    next();
+  } catch (err) {
+    res.status(401).send({"message":err});
+  }
+};
+
+const secretKey = "GUVI_ECOMMERCE"
 
 app.use(bodyParser.json());
 app.use(cors({origin:"*"}))
 app.use("/authentication",authentication);
-app.use("/cart",cart);
+app.use("/cart",verifyToken,cart);
 
 
 const mongoose_URI = process.env.MONGO_URI;
-
 
 mongoose.connect(mongoose_URI,{ useNewUrlParser: true, useUnifiedTopology: true });
 const db = mongoose.connection;

@@ -7,16 +7,18 @@ router.get("/", (req, res) => {
 
 router.post("/item", async (req, res) => {
   const { productId, userId, quantity } = req.body;
+  console.log(req.body)
   try {
     let userCart = await Cart.findOne({ userId: userId });
     if (!userCart) {
       userCart = new Cart({ userId: userId, items: [] });
     }
     const existingItem = userCart.items.find(
-      (item) => item.productId === productId
+      (item) => item.productId === Number(productId)
     );
     if (existingItem) {
       existingItem.quantity = quantity;
+      console.log("existingItem");
     } else {
       userCart.items.push({ productId: productId, quantity: quantity });
     }
@@ -28,18 +30,23 @@ router.post("/item", async (req, res) => {
 });
 
 router.delete('/item', async(req, res)=>{
-    const {userId, productId} = req.body;
+  console.log("Entered to the delete request")
+    const {userId} = req.body;
+    const {productId} = req.query;
+    console.log(productId)
     try{
     const cart = await Cart.findOne({userId:userId});
     if(cart.length===0 || cart?.items?.length===0){
         res.status(200).send({message: "Empty Cart"});
         return;
     }
-    let index = cart?.items?.findIndex(item=> (item.productId===productId))
+    console.log(cart.items);
+    let index = cart?.items?.findIndex(item=> (item.productId===Number(productId)))
+    console.log(index)
     if(index !==-1){
         cart.items.splice(index,1);
         cart.save();
-        res.send("product deleted");
+        res.send({message:"product deleted"});
         return;
     }
     res.status(200).send({message:"product not found"});
