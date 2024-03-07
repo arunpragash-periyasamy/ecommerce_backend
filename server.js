@@ -10,12 +10,9 @@ const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 // Function to verify JWT token using async/await
 const verifyToken = async (req, res, next) => {
-    console.log(req.headers);
     const token = req.headers['authorization'].split(" ")[1];
-    console.log(token);
   try {
     const decoded = await jwt.verify(token, process.env.SECRET_KEY);
-    console.log("userData ", decoded);
     req.body.userId = decoded.userId;
     next();
   } catch (err) {
