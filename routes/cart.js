@@ -13,7 +13,7 @@ router.post("/item", async (req, res) => {
       userCart = new Cart({ userId: userId, items: [] });
     }
     const existingItem = userCart.items.find(
-      (item) => item.productId === Number(productId)
+      (item) => item.productId === Number(product.productId)
     );
     if (existingItem) {
       existingItem.quantity = quantity;
@@ -23,7 +23,23 @@ router.post("/item", async (req, res) => {
     const id = await userCart.save();
     res.status(201).send({ message: "Product added to the cart" });
   } catch (err) {
+    console.log("error ",err)
     res.status(400).send({ messsage: err });
+  }
+});
+
+router.get('/item', async(req, res)=>{
+  const {userId} = req.body;
+  try{
+    const data = await Cart.findOne({ userId: userId});
+    if(data){
+      res.send(data?.items);
+    }else{
+      res.send([]);
+    }
+  }catch(err){
+    console.log("error ",err);
+    res.status(400).send({"message":err});
   }
 });
 
